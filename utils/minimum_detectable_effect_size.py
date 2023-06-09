@@ -375,7 +375,7 @@ if __name__ == '__main__':
                  make_visualizations=plot_distributions,
                  number_of_data_points=number_of_data_points_to_generate,
                  null_conversion_rate=baseline_conversion_rate,
-                 path_to_data=historical_data_path,
+                #  path_to_data=historical_data_path,
                  significance_level=sig_level,
                  power_level=power,
                  number_of_simulations=number_of_simulations_to_run,
