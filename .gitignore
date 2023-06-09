@@ -1,0 +1,6 @@
+# ignore all .csv files
+*.csv
+
+# ignore the datasets directory and data directory (why do we have both) 
+datasets/
+data/
