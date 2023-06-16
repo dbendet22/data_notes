@@ -499,7 +499,70 @@ class ConversionExperiment:
         df_results['control_confidence_interval_{0}_percent_lower'.format(np.round((1 - alpha)*100), 2)] = diff_ - critical_value_diff
         df_results['control_confidence_interval_{0}_percent_upper'.format(np.round((1 - alpha)*100), 2)] = diff_ + critical_value_diff        
 
+        df_results['count_control'] = count_control
+        df_results['count_treatment'] = count_treatment
+
+        df_results['std_control'] = count_control
+        df_results['std_treatment'] = count_treatment
+
         df_results['z_statistic'] = z_statistic
         df_results['p_value'] = p_value
+        df_results['pct_change'] = df_results['treatment_minus_control_mean'] / df_results['control_mean']
 
         return df_results
+
+
+    def simple_ab_test_aggregate(self, mu_treatment: float, 
+                                    mu_control: float,
+                                    std_treatment: float,
+                                    std_control: float,
+                                    count_treatment: float,
+                                    count_control: float,
+                                    alpha: float, 
+                                    null_hypothesis: float) -> pd.DataFrame:
+        
+        # Compute standard errors
+        se_treatment = std_treatment / np.sqrt(count_treatment)
+        se_control = std_control / np.sqrt(count_control)    
+
+        # Compute effect size:
+        diff_ = mu_treatment - mu_control
+
+        # Compute standard error for difference in treatment and control distributions
+        se_diff_ = np.sqrt(((std_treatment**2) / count_treatment) + ((std_control**2) / count_control))
+
+        z_statistic = (diff_ - null_hypothesis) / se_diff_
+        p_value = stats.norm.cdf(z_statistic)
+
+        critical_value_treatment = - se_treatment * stats.norm.ppf(alpha/2)
+        critical_value_control = - se_control * stats.norm.ppf(alpha/2)
+        critical_value_diff = - se_diff_ * stats.norm.ppf(alpha/2)
+
+    #     df_results = pd.DataFrame()
+        df_results = pd.DataFrame({'placeholder_col': [5]}) # weird hack i have to do for now with the placeholder
+        
+        df_results['treatment_mean'] = mu_treatment
+        df_results['treatment_confidence_interval_{0}_percent_lower'.format(np.round((1 - alpha)*100), 2)] = mu_treatment - critical_value_treatment
+        df_results['treatment__confidence_interval_{0}_percent_upper'.format(np.round((1 - alpha)*100), 2)] = mu_treatment + critical_value_treatment
+
+        df_results['control_mean'] = mu_control
+        df_results['control_confidence_interval_{0}_percent_lower'.format(np.round((1 - alpha)*100), 2)] = mu_control - critical_value_control
+        df_results['control_confidence_interval_{0}_percent_upper'.format(np.round((1 - alpha)*100), 2)] = mu_control + critical_value_control
+
+        df_results['treatment_minus_control_mean'] = diff_
+        df_results['control_confidence_interval_{0}_percent_lower'.format(np.round((1 - alpha)*100), 2)] = diff_ - critical_value_diff
+        df_results['control_confidence_interval_{0}_percent_upper'.format(np.round((1 - alpha)*100), 2)] = diff_ + critical_value_diff        
+
+        df_results['count_control'] = count_control
+        df_results['count_treatment'] = count_treatment
+
+        df_results['std_control'] = count_control
+        df_results['std_treatment'] = count_treatment
+
+        df_results['z_statistic'] = z_statistic
+        df_results['p_value'] = p_value
+        df_results['pct_change'] = df_results['treatment_minus_control_mean'] / df_results['control_mean']
+
+        return df_results
+
+
